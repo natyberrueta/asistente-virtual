@@ -1,1 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente AI</title>
+    <style>
+        .assistant-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+
+        .assistant-button:hover {
+            background-color: #45a049;
+            color: white;
+        }
+
+        #chatBox {
+            display: none;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            padding: 15px;
+            width: 300px;
+            height: 400px;
+            overflow-y: auto;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: white;
+        }
+
+        #chatInput {
+            width: calc(100% - 30px);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+        }
+
+        .chat-message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .user-message {
+            background-color: #e1ffc7;
+            align-self: flex-end;
+        }
+
+        .assistant-message {
+            background-color: #f0f0f0;
+            align-self: flex-start;
+        }
+    </style>
+</head>
+<body>
+    <button class="assistant-button" onclick="toggleChat()">🫙 Consultar Asistente</button>
+
+    <div id="chatBox">
+        <div id="chatMessages"></div>
+        <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." onkeypress="handleKeyPress(event)">
+    </div>
+
+    <script>
+        function toggleChat() {
+            var chatBox = document.getElementById('chatBox');
+            chatBox.style.display = (chatBox.style.display === 'none' || chatBox.style.display === '') ? 'block' : 'none';
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                var input = document.getElementById('chatInput').value;
+                document.getElementById('chatInput').value = '';
+                displayMessage(input, 'user-message');
+                getResponse(input);
+            }
+        }
+
+        function displayMessage(message, className) {
+            var messageContainer = document.createElement('div');
+            messageContainer.className = 'chat-message ' + className;
+            messageContainer.textContent = message;
+            document.getElementById('chatMessages').appendChild(messageContainer);
+            document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        }
+
+        async function getResponse(input) {
+            var response = await fetch('/api/getResponse', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: input })
+            }).then(res => res.json());
+            displayMessage(response.answer, 'assistant-message');
+        }
+    </script>
+</body>
+</html>
 
